@@ -8,7 +8,7 @@ app.use(express.json());
 //get método pra buscar alguma informação, no primeiro parâmetro vc recebe a rota e no segundo uma função que recebe dois parâmetros, 1- requisição que foi feita 2- resposta que vai ser enviada 
 app.get("/", (request, response)=>{
     //send enviar uma resposta pra essa requisição 
-    response.send("Primeira Rotda")
+    response.send("Primeira Rota")
 })
 
 //rota com parâmetros obrigatórios

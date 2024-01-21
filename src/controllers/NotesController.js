@@ -3,7 +3,7 @@ const knex = require("../database/knex");
 class NotesController {
   async create(request, response) {
     const { title, description, tags, links } = request.body;
-    const { user_id } = request.params;
+    const  user_id  = request.user.id;
 
     //cadastrar a nota e recupera o id da nota cadastrado
     const [note_id] = await knex("notes").insert({
@@ -59,7 +59,9 @@ class NotesController {
   }
 
   async index(request, response) {
-    const { title, user_id, tags } = request.query;
+    const { title, tags } = request.query;
+
+    const user_id = request.user.id;
 
     //whereLike serve pra procurar por valores que contenham dentro de um conteúdo, utilizando %chave%
     let notes;
