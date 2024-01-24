@@ -1,16 +1,16 @@
-const knex = require("knex");
+const knex = require("../database/knex");
 const DiskStorage  = require("../provider/DiskStorage");
 const AppError = require("../utils/AppError");
 
 
 class UserAvatarController {
   async update(request, response){
-    const id_user = request.user.id;
+    const user_id = request.user.id;
     const avatarFilename = request.file.filename;
 
     const diskStorage = new DiskStorage();
 
-    const user = await knex("users").where({ id: id_user }).first();
+    const user = await knex("users").where({ id: user_id }).first();
 
     if (!user) {
         throw new AppError("Somente pessoas autorizadas pode mudar o avatar", 401)
@@ -21,7 +21,12 @@ class UserAvatarController {
     }
 
     const filename = await diskStorage.saveFile(avatarFilename)
-    user.avatar = filename
+    // user.avatar = filename
+
+    await knex("users").update({avatar: filename}).where({ id: user_id });
+     
+    return response.json(user) 
+
   }
 }
 

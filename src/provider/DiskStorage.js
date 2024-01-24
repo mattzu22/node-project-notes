@@ -24,7 +24,7 @@ class DiskStorage {
         const filePath = path.resolve(uploadConfig.UPLOADS_FOLDER, file)
 
         try {
-            //o stat retoan o status do arquivo 
+            //o stat retorna o status do arquivo 
             await fs.promises.stat(filePath)
         } catch  {
             return;
