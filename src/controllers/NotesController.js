@@ -77,6 +77,7 @@ class NotesController {
         .whereLike("notes.title", `%${title}%`)
         .whereIn("name", filterTags)
         //innerJoin serve pra conectar uma tabela com a outra, primeiro parametro vai ser qual tabela vc quer conectar e os outros dois será qual registro eu vou utilizar pra conectar ambas
+        .groupBy("notes.id")
         .innerJoin("notes", "notes.id", "tags.note_id")
         .orderBy("title");
     } else {

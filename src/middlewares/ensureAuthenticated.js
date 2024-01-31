@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 const { verify } = require("jsonwebtoken");
 const AppError = require("../utils/AppError");
 const authConfig = require("../configs/auth");
@@ -17,7 +9,7 @@ function ensureAuthenticated(request, response, next){
         throw new AppError("JWT Token não informado", 401);
     }
 
-    //"Bare xxxx" =  forma como o token é azmazenada
+    //"Bare xxxx" =  forma como o token é azmazenado
     //split separa as palavras dentro de um vetor 
     const [, token ] = authHeader.split(" ");
 
