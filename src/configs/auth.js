@@ -1,7 +1,7 @@
 module.exports = {
     jwt:{
         //gerar o token 
-        secret: "default",
-        expiresIn: "1d"
+        secret: process.env.AUTH_SECRET || "default",
+        expiresIn: "1m",
     }
 }

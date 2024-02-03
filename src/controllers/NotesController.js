@@ -3,7 +3,7 @@ const knex = require("../database/knex");
 class NotesController {
   async create(request, response) {
     const { title, description, tags, links } = request.body;
-    const  user_id  = request.user.id;
+    const user_id = request.user.id;
 
     //cadastrar a nota e recupera o id da nota cadastrado
     const [note_id] = await knex("notes").insert({
@@ -31,7 +31,7 @@ class NotesController {
 
     await knex("tags").insert(tagsInsert);
 
-    response.json();
+    return response.json();
   }
 
   async show(request, response) {
@@ -43,7 +43,7 @@ class NotesController {
       .where({ note_id: id })
       .orderBy("created_At");
 
-    response.json({
+    return response.json({
       ...note,
       tags,
       links,
@@ -88,16 +88,16 @@ class NotesController {
     }
 
     //pegar todas as tags baseado no id do usuário
-    const userTags = await knex("tags").where({ user_id })
-    const notesWithTags = notes.map(note => {
+    const userTags = await knex("tags").where({ user_id });
+    const notesWithTags = notes.map((note) => {
       //filter para filtrar as tags das notas
-        const noteTags = userTags.filter(tag => tag.note_id === note.id)
+      const noteTags = userTags.filter((tag) => tag.note_id === note.id);
 
-        return {
-          ...note,
-          tags: noteTags
-        }
-    })
+      return {
+        ...note,
+        tags: noteTags,
+      };
+    });
 
     return response.json(notesWithTags);
   }
