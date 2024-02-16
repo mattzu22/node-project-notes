@@ -29,9 +29,9 @@ function ensureAuthenticated(request, response, next){
         request.user = {
             id: Number(user_id),
         }
-
+        
         return next();
-    } catch{
+    } catch(error){
         throw new AppError("JWT Token invãlido", 401);
     }
 }

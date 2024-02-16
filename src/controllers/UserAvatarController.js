@@ -26,7 +26,6 @@ class UserAvatarController {
     await knex("users").update({avatar: filename}).where({ id: user_id });
      
     return response.json(user) 
-
   }
 }
 

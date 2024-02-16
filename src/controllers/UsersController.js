@@ -24,11 +24,6 @@ class UsersController {
 
     return response.status(201).json();
 
-    // if(!name){
-    //   throw new AppError("Nome obrigátorio!");
-    // }
-
-    // response.status("201").json({ name, user, password });
   }
 
   async update(request, response){
