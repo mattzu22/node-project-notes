@@ -8,6 +8,7 @@ class SessionsController {
   async create(request, response) {
     const { email, password } = request.body;
 
+    
     if (!email || !password ) {
       throw new AppError("Preencha os campos", 400);
     }
