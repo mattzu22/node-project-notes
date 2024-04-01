@@ -1,6 +1,8 @@
 //hash é a função que vai gerar a cryptografia 
-const { hash, compare } = require("bcryptjs")
-const AppError = require("../utils/AppError")
+const { compare } = require("bcryptjs")
+
+const UserRepository = require("../repositories/UserRepository")
+const UserCreateService = require("../services/UserCreateService")
 
 const sqliteConnection = require("../database/sqlite")
 
@@ -8,22 +10,12 @@ class UsersController {
   async create(request, response) {
     const { name, email, password } = request.body;
 
-    const dataBase = await sqliteConnection();
-    //inserir um conteúdo de uma variavel dentro do comando SQL
-    const checkUserExists = await dataBase.get("SELECT * FROM users WHERE email = (?)", [email])
+    const userRepository = new UserRepository();
+    const userCreateService = new UserCreateService(userRepository);
 
-    if(checkUserExists){
-      // lançou uma exceção
-      throw new AppError("Este e-mail já existe!")
-    }
-
-    const hashPassword = await hash(password, 9);
-
-    //run + executar, nesse caso uma inserção 
-    await dataBase.run("INSERT INTO users (name,email,password) VALUES (? , ?, ?)", [ name, email , hashPassword ])
+    await userCreateService.execute({name, email, password})  
 
     return response.status(201).json();
-
   }
 
   async update(request, response){
