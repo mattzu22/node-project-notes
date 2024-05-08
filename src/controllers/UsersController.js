@@ -1,12 +1,6 @@
-const { hash, compare } = require("bcryptjs");
-
-const AppError = require("../utils/AppError");
-
 const UserRepository = require("../repositories/UserRepository");
 const UserCreateService = require("../services/UserCreateService");
-const UserUpdateService = require("../services/userUpdateService");
-
-const sqliteConnection = require("../database/sqlite");
+const UserUpdateService = require("../services/UserUpdateService");
 
 class UsersController {
   async create(request, response) {
@@ -27,7 +21,13 @@ class UsersController {
     const userRepository = new UserRepository();
     const userUpdateService = new UserUpdateService(userRepository);
 
-    await userUpdateService.execute({name, email, password, old_password, user_id});
+    await userUpdateService.execute({
+      name,
+      email,
+      password,
+      old_password,
+      user_id,
+    });
 
     return response.json();
   }

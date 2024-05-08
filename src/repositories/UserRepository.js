@@ -1,3 +1,4 @@
+const knex = require("../database/knex");
 const sqliteConnection = require("../database/sqlite");
 
 class UserRepository {
@@ -14,7 +15,9 @@ class UserRepository {
   async findByUserId(user_id) {
     const dataBase = await sqliteConnection();
 
-    const user = await dataBase.get("SELECT * FROM users WHERE id = (?)", [user_id]);
+    const user = await dataBase.get("SELECT * FROM users WHERE id = (?)", [
+      user_id,
+    ]);
 
     return user;
   }
@@ -44,6 +47,10 @@ class UserRepository {
       `,
       [user.name, user.email, user.password, user_id]
     );
+  }
+
+  async updateAvatar({ filename, user_id }) {
+    await knex("users").update({ avatar: filename }).where({ id: user_id });
   }
 }
 

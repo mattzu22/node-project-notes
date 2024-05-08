@@ -2,7 +2,7 @@ const AppError = require("../utils/AppError");
 
 const { hash, compare } = require("bcryptjs");
 
-class userUpdateService {
+class UserUpdateService {
     constructor(userRepository) {
       this.userRepository = userRepository;
     }
@@ -44,4 +44,4 @@ class userUpdateService {
     }
   }
 
-module.exports = userUpdateService
+module.exports = UserUpdateService
