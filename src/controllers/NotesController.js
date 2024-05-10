@@ -1,37 +1,18 @@
 const knex = require("../database/knex");
+const NotesRepository = require("../repositories/NotesRepository");
+const NotesCreateService = require("../services/NotesCreateService");
 
 class NotesController {
   async create(request, response) {
     const { title, description, tags, links } = request.body;
     const user_id = request.user.id;
 
-    //cadastrar a nota e recupera o id da nota cadastrado
-    const [note_id] = await knex("notes").insert({
-      title,
-      description,
-      user_id,
-    });
+    const notesRepository = new NotesRepository();
+    const notesCreateService = new NotesCreateService(notesRepository);
 
-    const linksInsert = links.map((link) => {
-      return {
-        note_id,
-        url: link,
-      };
-    });
+    await notesCreateService.execute({ title, description, user_id, links, tags })
 
-    await knex("links").insert(linksInsert);
-
-    const tagsInsert = tags.map((name) => {
-      return {
-        note_id,
-        name,
-        user_id,
-      };
-    });
-
-    await knex("tags").insert(tagsInsert);
-
-    return response.json();
+    return response.status(201).json();
   }
 
   async show(request, response) {
