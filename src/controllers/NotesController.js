@@ -1,6 +1,9 @@
 const knex = require("../database/knex");
 const NotesRepository = require("../repositories/NotesRepository");
+const DeleteNoteService = require("../services/DeleteNoteService");
+const IndexNoteService = require("../services/IndexNoteService");
 const NotesCreateService = require("../services/NotesCreateService");
+const ShowNoteService = require("../services/ShowNoteService");
 
 class NotesController {
   async create(request, response) {
@@ -10,7 +13,13 @@ class NotesController {
     const notesRepository = new NotesRepository();
     const notesCreateService = new NotesCreateService(notesRepository);
 
-    await notesCreateService.execute({ title, description, user_id, links, tags })
+    await notesCreateService.execute({
+      title,
+      description,
+      user_id,
+      links,
+      tags,
+    });
 
     return response.status(201).json();
   }
@@ -18,11 +27,10 @@ class NotesController {
   async show(request, response) {
     const { id } = request.params;
 
-    const note = await knex("notes").where({ id }).first();
-    const tags = await knex("tags").where({ note_id: id }).orderBy("name");
-    const links = await knex("links")
-      .where({ note_id: id })
-      .orderBy("created_At");
+    const notesRepository = new NotesRepository();
+    const notesShowService = new ShowNoteService(notesRepository);
+
+    const { note, tags, links } = await notesShowService.execute(id);
 
     return response.json({
       ...note,
@@ -34,7 +42,10 @@ class NotesController {
   async delete(request, response) {
     const { id } = request.params;
 
-    await knex("notes").where({ id }).delete();
+    const notesRepository = new NotesRepository();
+    const deleteNoteService = new DeleteNoteService(notesRepository);
+
+    await deleteNoteService.execute(id);
 
     return response.json();
   }
@@ -44,41 +55,14 @@ class NotesController {
 
     const user_id = request.user.id;
 
-    //whereLike serve pra procurar por valores que contenham dentro de um conteúdo, utilizando %chave%
-    let notes;
+    const notesRepository = new NotesRepository();
+    const indexNoteService = new IndexNoteService(notesRepository);
 
-    if (tags) {
-      const filterTags = tags.split(",");
-      //whereIn vai comprar name da tag com o vetor que estpa sendo passado
-      notes = await knex("tags")
-        //select passando um vetor pra pegar os valores de ambas as tabelas
-        .select(["notes.id", "notes.title", "notes.user_id"])
-        //filtrar as tags de acordo o id do user
-        .where("notes.user_id", user_id)
-        .whereLike("notes.title", `%${title}%`)
-        .whereIn("name", filterTags)
-        //innerJoin serve pra conectar uma tabela com a outra, primeiro parametro vai ser qual tabela vc quer conectar e os outros dois será qual registro eu vou utilizar pra conectar ambas
-        .groupBy("notes.id")
-        .innerJoin("notes", "notes.id", "tags.note_id")
-        .orderBy("title");
-    } else {
-      notes = await knex("notes")
-        .where({ user_id })
-        .whereLike("title", `%${title}%`)
-        .orderBy("notes.title");
-    }
-
-    //pegar todas as tags baseado no id do usuário
-    const userTags = await knex("tags").where({ user_id });
-    const notesWithTags = notes.map((note) => {
-      //filter para filtrar as tags das notas
-      const noteTags = userTags.filter((tag) => tag.note_id === note.id);
-
-      return {
-        ...note,
-        tags: noteTags,
-      };
-    });
+    const notesWithTags  = await indexNoteService.execute(
+      user_id,
+      title,
+      tags
+    );
 
     return response.json(notesWithTags);
   }

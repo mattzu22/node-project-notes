@@ -12,8 +12,6 @@ class NotesCreateService {
       user_id,
     });
 
-    console.log(note_id);
-
     const linksInsert = links.map((link) => {
       return {
         note_id,
