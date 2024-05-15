@@ -21,7 +21,7 @@ class UserRepository {
 
     return user;
   }
-
+  
   async create({ name, email, password }) {
     const dataBase = await sqliteConnection();
 
